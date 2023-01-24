@@ -402,7 +402,7 @@ impl DirView {
         link: Q,
     ) -> io::Result<()> {
         self.check_mutation()?;
-        self.link.symlink_dir(original, link)
+        self.dir.symlink_dir(original, link)
     }
 
     /// Creates a new `UnixListener` bound to the specified socket.
