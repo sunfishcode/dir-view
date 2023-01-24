@@ -1,15 +1,13 @@
 use crate::{ReadDirView, ViewKind};
-use cap_std::fs::Dir;
-use cap_std::fs::{DirBuilder, File, Metadata, OpenOptions, Permissions};
+use cap_std::fs::{Dir, DirBuilder, File, Metadata, OpenOptions, Permissions};
 use cap_std::io_lifetimes::AsFilelike;
 #[cfg(unix)]
 use cap_std::os::unix::net::{UnixDatagram, UnixListener, UnixStream};
 use cap_std::AmbientAuthority;
 #[cfg(target_os = "wasi")]
 use rustix::fs::OpenOptionsExt;
-use std::fmt;
-use std::io;
 use std::path::{Path, PathBuf};
+use std::{fmt, io};
 
 /// A view of a [`Dir`].
 ///
@@ -21,7 +19,8 @@ pub struct DirView {
 }
 
 impl DirView {
-    /// Constructs a new instance of `Self` from the given [`Dir`] and [`ViewKind`].
+    /// Constructs a new instance of `Self` from the given [`Dir`] and
+    /// [`ViewKind`].
     #[inline]
     pub fn from_dir(dir: Dir, view_kind: ViewKind) -> Self {
         Self { dir, view_kind }
