@@ -42,8 +42,25 @@ fn basic() {
         readonly.remove_dir(".").unwrap_err().kind(),
         std::io::ErrorKind::PermissionDenied
     );
+    #[cfg(unix)]
     assert_eq!(
         readonly.symlink("hello", "symlink").unwrap_err().kind(),
+        std::io::ErrorKind::PermissionDenied
+    );
+    #[cfg(windows)]
+    assert_eq!(
+        readonly
+            .symlink_file("hello", "symlink_file")
+            .unwrap_err()
+            .kind(),
+        std::io::ErrorKind::PermissionDenied
+    );
+    #[cfg(windows)]
+    assert_eq!(
+        readonly
+            .symlink_dir("hello", "symlink_dir")
+            .unwrap_err()
+            .kind(),
         std::io::ErrorKind::PermissionDenied
     );
     assert_eq!(
@@ -97,8 +114,25 @@ fn basic_utf8() {
         readonly.remove_dir(".").unwrap_err().kind(),
         std::io::ErrorKind::PermissionDenied
     );
+    #[cfg(unix)]
     assert_eq!(
         readonly.symlink("hello", "symlink").unwrap_err().kind(),
+        std::io::ErrorKind::PermissionDenied
+    );
+    #[cfg(windows)]
+    assert_eq!(
+        readonly
+            .symlink_file("hello", "symlink_file")
+            .unwrap_err()
+            .kind(),
+        std::io::ErrorKind::PermissionDenied
+    );
+    #[cfg(windows)]
+    assert_eq!(
+        readonly
+            .symlink_dir("hello", "symlink_dir")
+            .unwrap_err()
+            .kind(),
         std::io::ErrorKind::PermissionDenied
     );
     assert_eq!(
