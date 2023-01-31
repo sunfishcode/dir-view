@@ -10,6 +10,8 @@ mod read_dir;
 #[cfg(feature = "fs_utf8")]
 mod read_dir_utf8;
 
+pub use cap_std::{ambient_authority, AmbientAuthority};
+
 pub use dir::DirView;
 pub use dir_entry::DirEntryView;
 #[cfg(feature = "fs_utf8")]
