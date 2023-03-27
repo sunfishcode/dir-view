@@ -134,3 +134,10 @@ impl fmt::Debug for DirEntryViewUtf8 {
         self.entry.fmt(f)
     }
 }
+
+#[cfg(feature = "cap-fs-ext")]
+impl cap_fs_ext::DirEntryExt for DirEntryViewUtf8 {
+    fn full_metadata(&self) -> io::Result<Metadata> {
+        cap_fs_ext::DirEntryExt::full_metadata(&self.entry)
+    }
+}

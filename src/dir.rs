@@ -1,4 +1,6 @@
 use crate::{ReadDirView, ViewKind};
+#[cfg(feature = "cap-fs-ext")]
+use cap_fs_ext::SystemTimeSpec;
 use cap_std::fs::{Dir, DirBuilder, File, Metadata, OpenOptions, Permissions};
 use cap_std::io_lifetimes::AsFilelike;
 #[cfg(unix)]
@@ -614,5 +616,68 @@ impl fmt::Debug for DirView {
         #[cfg(windows)]
         b.field("view_kind", &self.view_kind);
         b.finish()
+    }
+}
+
+#[cfg(feature = "cap-fs-ext")]
+impl cap_fs_ext::DirExt for DirView {
+    fn set_atime<P: AsRef<Path>>(&self, path: P, atime: SystemTimeSpec) -> io::Result<()> {
+        self.check_mutation()?;
+        cap_fs_ext::DirExt::set_atime(&self.dir, path, atime)
+    }
+
+    fn set_mtime<P: AsRef<Path>>(&self, path: P, mtime: SystemTimeSpec) -> io::Result<()> {
+        self.check_mutation()?;
+        cap_fs_ext::DirExt::set_mtime(&self.dir, path, mtime)
+    }
+
+    fn set_times<P: AsRef<Path>>(
+        &self,
+        path: P,
+        atime: Option<SystemTimeSpec>,
+        mtime: Option<SystemTimeSpec>,
+    ) -> io::Result<()> {
+        self.check_mutation()?;
+        cap_fs_ext::DirExt::set_times(&self.dir, path, atime, mtime)
+    }
+
+    fn set_symlink_times<P: AsRef<Path>>(
+        &self,
+        path: P,
+        atime: Option<SystemTimeSpec>,
+        mtime: Option<SystemTimeSpec>,
+    ) -> io::Result<()> {
+        self.check_mutation()?;
+        cap_fs_ext::DirExt::set_symlink_times(&self.dir, path, atime, mtime)
+    }
+
+    fn symlink<P: AsRef<Path>, Q: AsRef<Path>>(&self, src: P, dst: Q) -> io::Result<()> {
+        self.check_mutation()?;
+        cap_fs_ext::DirExt::symlink(&self.dir, src, dst)
+    }
+
+    fn symlink_file<P: AsRef<Path>, Q: AsRef<Path>>(&self, src: P, dst: Q) -> io::Result<()> {
+        self.check_mutation()?;
+        cap_fs_ext::DirExt::symlink_file(&self.dir, src, dst)
+    }
+
+    fn symlink_dir<P: AsRef<Path>, Q: AsRef<Path>>(&self, src: P, dst: Q) -> io::Result<()> {
+        self.check_mutation()?;
+        cap_fs_ext::DirExt::symlink_dir(&self.dir, src, dst)
+    }
+
+    fn open_dir_nofollow<P: AsRef<Path>>(&self, path: P) -> io::Result<Self>
+    where
+        Self: Sized,
+    {
+        Ok(Self {
+            dir: self.dir.open_dir_nofollow(path)?,
+            view_kind: self.view_kind,
+        })
+    }
+
+    fn remove_file_or_symlink<P: AsRef<Path>>(&self, path: P) -> io::Result<()> {
+        self.check_mutation()?;
+        cap_fs_ext::DirExt::remove_file_or_symlink(&self.dir, path)
     }
 }

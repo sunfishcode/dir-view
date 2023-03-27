@@ -1,5 +1,7 @@
 use crate::{ReadDirViewUtf8, ViewKind};
 use camino::{Utf8Path, Utf8PathBuf};
+#[cfg(feature = "cap-fs-ext")]
+use cap_fs_ext::SystemTimeSpec;
 use cap_std::fs_utf8::{Dir, DirBuilder, File, Metadata, OpenOptions, Permissions};
 use cap_std::io_lifetimes::AsFilelike;
 #[cfg(unix)]
@@ -625,5 +627,76 @@ impl fmt::Debug for DirViewUtf8 {
         #[cfg(windows)]
         b.field("view_kind", &self.view_kind);
         b.finish()
+    }
+}
+
+#[cfg(feature = "cap-fs-ext")]
+impl cap_fs_ext::DirExtUtf8 for DirViewUtf8 {
+    fn set_atime<P: AsRef<Utf8Path>>(&self, path: P, atime: SystemTimeSpec) -> io::Result<()> {
+        self.check_mutation()?;
+        cap_fs_ext::DirExtUtf8::set_atime(&self.dir, path, atime)
+    }
+
+    fn set_mtime<P: AsRef<Utf8Path>>(&self, path: P, mtime: SystemTimeSpec) -> io::Result<()> {
+        self.check_mutation()?;
+        cap_fs_ext::DirExtUtf8::set_mtime(&self.dir, path, mtime)
+    }
+
+    fn set_times<P: AsRef<Utf8Path>>(
+        &self,
+        path: P,
+        atime: Option<SystemTimeSpec>,
+        mtime: Option<SystemTimeSpec>,
+    ) -> io::Result<()> {
+        self.check_mutation()?;
+        cap_fs_ext::DirExtUtf8::set_times(&self.dir, path, atime, mtime)
+    }
+
+    fn set_symlink_times<P: AsRef<Utf8Path>>(
+        &self,
+        path: P,
+        atime: Option<SystemTimeSpec>,
+        mtime: Option<SystemTimeSpec>,
+    ) -> io::Result<()> {
+        self.check_mutation()?;
+        cap_fs_ext::DirExtUtf8::set_symlink_times(&self.dir, path, atime, mtime)
+    }
+
+    fn symlink<P: AsRef<Utf8Path>, Q: AsRef<Utf8Path>>(&self, src: P, dst: Q) -> io::Result<()> {
+        self.check_mutation()?;
+        cap_fs_ext::DirExtUtf8::symlink(&self.dir, src, dst)
+    }
+
+    fn symlink_file<P: AsRef<Utf8Path>, Q: AsRef<Utf8Path>>(
+        &self,
+        src: P,
+        dst: Q,
+    ) -> io::Result<()> {
+        self.check_mutation()?;
+        cap_fs_ext::DirExtUtf8::symlink_file(&self.dir, src, dst)
+    }
+
+    fn symlink_dir<P: AsRef<Utf8Path>, Q: AsRef<Utf8Path>>(
+        &self,
+        src: P,
+        dst: Q,
+    ) -> io::Result<()> {
+        self.check_mutation()?;
+        cap_fs_ext::DirExtUtf8::symlink_dir(&self.dir, src, dst)
+    }
+
+    fn open_dir_nofollow<P: AsRef<Utf8Path>>(&self, path: P) -> io::Result<Self>
+    where
+        Self: Sized,
+    {
+        Ok(Self {
+            dir: self.dir.open_dir_nofollow(path)?,
+            view_kind: self.view_kind,
+        })
+    }
+
+    fn remove_file_or_symlink<P: AsRef<Utf8Path>>(&self, path: P) -> io::Result<()> {
+        self.check_mutation()?;
+        cap_fs_ext::DirExtUtf8::remove_file_or_symlink(&self.dir, path)
     }
 }

@@ -135,3 +135,10 @@ impl fmt::Debug for DirEntryView {
         self.entry.fmt(f)
     }
 }
+
+#[cfg(feature = "cap-fs-ext")]
+impl cap_fs_ext::DirEntryExt for DirEntryView {
+    fn full_metadata(&self) -> io::Result<Metadata> {
+        cap_fs_ext::DirEntryExt::full_metadata(&self.entry)
+    }
+}
