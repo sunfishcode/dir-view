@@ -100,7 +100,7 @@ impl DirEntryViewUtf8 {
     fn check_mutation(&self) -> io::Result<()> {
         match self.view_kind {
             ViewKind::Full => Ok(()),
-            ViewKind::Readonly => return Err(Self::readonly()),
+            ViewKind::Readonly => Err(Self::readonly()),
         }
     }
 
