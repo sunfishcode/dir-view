@@ -143,3 +143,48 @@ fn basic_utf8() {
         std::io::ErrorKind::PermissionDenied
     );
 }
+
+#[cfg(feature = "cap-fs-ext")]
+#[test]
+fn cap_fs_ext() {
+    use dir_view::cap_fs_ext::DirExt;
+
+    let temp_dir = TempDir::new(ambient_authority()).unwrap();
+
+    // A readonly view can't change anything.
+    let dir = temp_dir.open_dir_nofollow(".").unwrap();
+    let readonly = DirView::from_dir(dir, ViewKind::Readonly);
+    assert_eq!(
+        readonly
+            .set_atime(".", dir_view::cap_fs_ext::SystemTimeSpec::SymbolicNow)
+            .unwrap_err()
+            .kind(),
+        std::io::ErrorKind::PermissionDenied
+    );
+    assert_eq!(
+        readonly
+            .set_mtime(".", dir_view::cap_fs_ext::SystemTimeSpec::SymbolicNow)
+            .unwrap_err()
+            .kind(),
+        std::io::ErrorKind::PermissionDenied
+    );
+    assert_eq!(
+        readonly.set_times(".", None, None).unwrap_err().kind(),
+        std::io::ErrorKind::PermissionDenied
+    );
+    assert_eq!(
+        readonly
+            .set_symlink_times(".", None, None)
+            .unwrap_err()
+            .kind(),
+        std::io::ErrorKind::PermissionDenied
+    );
+    assert_eq!(
+        readonly.symlink(".", "foo").unwrap_err().kind(),
+        std::io::ErrorKind::PermissionDenied
+    );
+    assert_eq!(
+        readonly.symlink_dir(".", "foo").unwrap_err().kind(),
+        std::io::ErrorKind::PermissionDenied
+    );
+}
