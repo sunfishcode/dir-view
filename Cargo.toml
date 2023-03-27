@@ -13,6 +13,7 @@ exclude = ["/.*"]
 
 [dependencies]
 cap-std = "1.0.3"
+cap-fs-ext = { version = "1.0.3", optional = true }
 camino = { version = "1.1.2", optional = true }
 
 [target.'cfg(unix)'.dependencies]
@@ -26,7 +27,7 @@ cap-tempfile = "1.0.3"
 
 [features]
 default = []
-fs_utf8 = ["cap-std/fs_utf8", "camino"]
+fs_utf8 = ["cap-std/fs_utf8", "cap-fs-ext/fs_utf8", "camino"]
 
 [package.metadata.docs.rs]
 all-features = true
