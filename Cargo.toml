@@ -1,6 +1,6 @@
 [package]
 name = "dir-view"
-version = "0.1.5"
+version = "0.2.0"
 authors = ["Dan Gohman <dev@sunfishcode.online>"]
 description = "Views of cap-std's Dir"
 documentation = "https://docs.rs/dir-view"
