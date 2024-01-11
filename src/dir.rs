@@ -1,6 +1,6 @@
 use crate::{ReadDirView, ViewKind};
 #[cfg(feature = "cap-fs-ext")]
-use cap_fs_ext::SystemTimeSpec;
+use cap_fs_ext::{AccessType, SystemTimeSpec};
 use cap_std::fs::{Dir, DirBuilder, File, Metadata, OpenOptions, Permissions};
 use cap_std::io_lifetimes::AsFilelike;
 #[cfg(unix)]
@@ -679,5 +679,22 @@ impl cap_fs_ext::DirExt for DirView {
     fn remove_file_or_symlink<P: AsRef<Path>>(&self, path: P) -> io::Result<()> {
         self.check_mutation()?;
         cap_fs_ext::DirExt::remove_file_or_symlink(&self.dir, path)
+    }
+
+    fn access<P: AsRef<Path>>(&self, path: P, type_: AccessType) -> io::Result<()> {
+        cap_fs_ext::DirExt::access(&self.dir, path, type_)
+    }
+
+    fn access_symlink<P: AsRef<Path>>(&self, path: P, type_: AccessType) -> io::Result<()> {
+        cap_fs_ext::DirExt::access_symlink(&self.dir, path, type_)
+    }
+
+    fn set_symlink_permissions<P: AsRef<Path>>(
+        &self,
+        path: P,
+        perm: Permissions,
+    ) -> io::Result<()> {
+        self.check_mutation()?;
+        cap_fs_ext::DirExt::set_symlink_permissions(&self.dir, path, perm)
     }
 }
